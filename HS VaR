@@ -1,0 +1,35 @@
+library(readxl)
+Data_VaR<- read_excel("C:/Wahyu Anwar Ridho/Portofolio/Dataset/Data Var Portofolio.xlsx")
+View(Data_VaR)
+summary(Data_VaR)
+PTBA=Data_VaR[,1]
+ITMG=Data_VaR[,2]
+ADRO=Data_VaR[,3]
+
+v1=var(PTBA)
+v2=var(ITMG)
+v3=var(ADRO)
+
+v12=cov(PTBA,ITMG)
+v13=cov(PTBA,ADRO)
+v23=cov(ITMG,ADRO)
+
+m=matrix(c(v1,v12,v13,v12,v2,v23,v13,v23,v3), nrow = 3, ncol = 3)
+mi=solve(m)
+m1=matrix(c(1,1,1),nrow=3)
+mh=mi%*%m1
+total=colSums (mh, dims = 1)
+w1=mh[1,1]/total
+w2=mh[2,1]/total
+w3=mh[3,1]/total
+Data_VaR$Portfolio=w1*Data_VaR$PTBA+w2*Data_VaR$ITMG+w3*Data_VaR$ADRO
+View(Data_VaR)
+
+data=Data_VaR$Portfolio
+n=length(data)
+invest=100000000
+hp=1
+sort_data=sort(data, decreasing = FALSE)
+q=quantile(data,0.05)
+VaR_HS=-(invest*q*sqrt(hp))
+VaR_HS
